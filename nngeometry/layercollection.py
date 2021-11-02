@@ -38,7 +38,7 @@ class LayerCollection:
         for layer, mod in model.named_modules():
             mod_class = mod.__class__.__name__
             if mod_class in ['Linear', 'Conv2d', 'BatchNorm1d',
-                             'BatchNorm2d', 'GroupNorm', 'WeightNorm1d']:
+                             'BatchNorm2d', 'GroupNorm', 'WeightNorm1d','Conv1d','Embedding']:
                 lc.add_layer('%s.%s' % (layer, str(mod)),
                              LayerCollection._module_to_layer(mod))
             elif not ignore_unsupported_layers:
@@ -72,7 +72,7 @@ class LayerCollection:
         """
         if module.__class__.__name__ not in \
                 ['Linear', 'Conv2d', 'BatchNorm1d',
-                 'BatchNorm2d', 'GroupNorm', 'WeightNorm1d']:
+                 'BatchNorm2d', 'GroupNorm', 'WeightNorm1d','Conv1d','Embedding']:
             raise NotImplementedError
         for layer, mod in model.named_modules():
             if mod is module:
@@ -104,6 +104,15 @@ class LayerCollection:
             return WeightNorm2dLayer(in_channels=mod.in_channels,
                                      out_channels=mod.out_channels,
                                      kernel_size=mod.kernel_size)
+        elif mod_class == 'Conv1d':
+            return Conv1dLayer(in_channels=mod.in_channels,
+                               out_channels=mod.out_channels,
+                               kernel_size=mod.kernel_size,
+                               bias=(mod.bias is not None))  
+         if mod_class == 'Embedding':
+            return EmbeddingLayer(in_features=mod.in_features,
+                               out_features=mod.out_features,
+                               bias=(mod.bias is not None))       
 
     def numel(self):
         """
@@ -139,7 +148,31 @@ class LayerCollection:
 class AbstractLayer(ABC):
     pass
 
+class Conv1dLayer(AbstractLayer):
 
+    def __init__(self, in_channels, out_channels, kernel_size, bias=True):
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.weight = Parameter(out_channels, in_channels, kernel_size[0],
+                                kernel_size[1])
+        if bias:
+            self.bias = Parameter(out_channels)
+        else:
+            self.bias = None
+
+    def numel(self):
+        if self.bias is not None:
+            return self.weight.numel() + self.bias.numel()
+        else:
+            return self.weight.numel()
+
+    def __eq__(self, other):
+        return (self.in_channels == other.in_channels and
+                self.out_channels == other.out_channels and
+                self.kernel_size == other.kernel_size)
+
+    
 class Conv2dLayer(AbstractLayer):
 
     def __init__(self, in_channels, out_channels, kernel_size, bias=True):
@@ -186,7 +219,27 @@ class LinearLayer(AbstractLayer):
         return (self.in_features == other.in_features and
                 self.out_features == other.out_features)
 
+class EmbeddingLayer(AbstractLayer):
 
+    def __init__(self, in_features, out_features, bias=True):
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = Parameter(out_features, in_features)
+        if bias:
+            self.bias = Parameter(out_features)
+        else:
+            self.bias = None
+
+    def numel(self):
+        if self.bias is not None:
+            return self.weight.numel() + self.bias.numel()
+        else:
+            return self.weight.numel()
+
+    def __eq__(self, other):
+        return (self.in_features == other.in_features and
+                self.out_features == other.out_features)
+    
 class BatchNorm1dLayer(AbstractLayer):
 
     def __init__(self, num_features):
