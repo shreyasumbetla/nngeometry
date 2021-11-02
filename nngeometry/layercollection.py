@@ -111,7 +111,7 @@ class LayerCollection:
                                out_channels=mod.out_channels,
                                kernel_size=mod.kernel_size,
                                bias=(mod.bias is not None))  
-         if mod_class == 'Embedding':
+        elif mod_class == 'Embedding':
             return EmbeddingLayer(in_features=mod.in_features,
                                out_features=mod.out_features,
                                bias=(mod.bias is not None))       
