@@ -713,6 +713,25 @@ class Jacobian:
             self.grads[self.i_output, self.start:self.start+bs,
                        start_p:start_p+mod.weight.numel()] \
                            .add_(gw.view(bs, -1))
+        elif mod_class == 'Conv1d':
+            indiv_gw = per_example_grad_conv(mod, x, gy)
+            self.grads[self.i_output, self.start:self.start+bs,
+                       start_p:start_p+mod.weight.numel()] \
+                .add_(indiv_gw.view(bs, -1))
+            if self.layer_collection[layer_id].bias is not None:
+                start_p += mod.weight.numel()
+                self.grads[self.i_output, self.start:self.start+bs,
+                           start_p:start_p+mod.bias.numel()] \
+                    .add_(gy)
+        elif mod_class == 'Embedding':
+            self.grads[self.i_output, self.start:self.start+bs,
+                       start_p:start_p+mod.weight.numel()] \
+                .add_(torch.bmm(gy.unsqueeze(2), x.unsqueeze(1)).view(bs, -1))
+            if self.layer_collection[layer_id].bias is not None:
+                start_p += mod.weight.numel()
+                self.grads[self.i_output, self.start:self.start+bs,
+                           start_p:start_p+mod.bias.numel()] \
+                    .add_(gy)
         else:
             raise NotImplementedError
 
