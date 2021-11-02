@@ -37,13 +37,15 @@ class LayerCollection:
         lc = LayerCollection()
         for layer, mod in model.named_modules():
             mod_class = mod.__class__.__name__
+            print("mod class: ", mod_class)
             if mod_class in ['Linear', 'Conv2d', 'BatchNorm1d',
                              'BatchNorm2d', 'GroupNorm', 'WeightNorm1d','Conv1d','Embedding']:
                 lc.add_layer('%s.%s' % (layer, str(mod)),
                              LayerCollection._module_to_layer(mod))
             elif not ignore_unsupported_layers:
                 if len(list(mod.children())) == 0 and len(list(mod.parameters())) > 0:
-                    raise Exception('I do not know what to do with layer ' + str(mod))
+                    #raise Exception('I do not know what to do with layer ' + str(mod))
+                    print("exception raised")
 
         return lc
 
