@@ -112,8 +112,8 @@ class LayerCollection:
                                kernel_size=mod.kernel_size,
                                bias=(mod.bias is not None))  
         elif mod_class == 'Embedding':
-            return EmbeddingLayer(in_features=mod.num_embeddings,
-                               out_features=mod.embedding_dim,
+            return EmbeddingLayer(num_embeddings=mod.num_embeddings,
+                               embedding_dim=mod.embedding_dim,
                                bias=(mod.bias is not None))       
 
     def numel(self):
@@ -223,12 +223,13 @@ class LinearLayer(AbstractLayer):
 
 class EmbeddingLayer(AbstractLayer):
 
-    def __init__(self, in_features, out_features, bias=True):
-        self.in_features = in_features
-        self.out_features = out_features
-        self.weight = Parameter(out_features, in_features)
+    def __init__(self, num_embeddings, embedding_dim, bias=True):
+        print("In init embeddinglayer")
+        self.num_embeddings = num_embeddings
+        self.embedding_dim = embedding_dim
+        self.weight = Parameter(embedding_dim, num_embeddings)
         if bias:
-            self.bias = Parameter(out_features)
+            self.bias = Parameter(embedding_dim)
         else:
             self.bias = None
 
@@ -239,8 +240,8 @@ class EmbeddingLayer(AbstractLayer):
             return self.weight.numel()
 
     def __eq__(self, other):
-        return (self.in_features == other.in_features and
-                self.out_features == other.out_features)
+        return (self.num_embeddings == other.num_embeddings and
+                self.embedding_dim == other.embedding_dim)
     
 class BatchNorm1dLayer(AbstractLayer):
 
