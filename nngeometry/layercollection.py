@@ -112,9 +112,10 @@ class LayerCollection:
                                kernel_size=mod.kernel_size,
                                bias=(mod.bias is not None))  
         elif mod_class == 'Embedding':
+            print(mod)
             print(mod.in_channels)
-            return EmbeddingLayer(in_features=mod.in_channels,
-                               out_features=mod.out_channels,
+            return EmbeddingLayer(in_features=mod.num_embeddings,
+                               out_features=mod.embedding_dim,
                                bias=(mod.bias is not None))       
 
     def numel(self):
