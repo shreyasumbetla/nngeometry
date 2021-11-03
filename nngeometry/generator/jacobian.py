@@ -62,6 +62,8 @@ class Jacobian:
         n_examples = len(loader.sampler)
         n_parameters = self.layer_collection.numel()
         bs = loader.batch_size
+        
+        print("n_params",n_parameters)
         G = torch.zeros((n_parameters, n_parameters), device=device)
         self.grads = torch.zeros((1, bs, n_parameters), device=device)
         if self.centering:
