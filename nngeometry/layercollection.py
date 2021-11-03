@@ -151,7 +151,7 @@ class AbstractLayer(ABC):
 
 class Conv1dLayer(AbstractLayer):
 
-    def __init__(self, in_channels, out_channels, kernel_size, bias=True):
+    def __init__(self, in_channels, out_channels, bias=True):
         self.in_channels = in_channels
         self.out_channels = out_channels
         self.weight = Parameter(out_channels, in_channels)
