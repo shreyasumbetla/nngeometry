@@ -39,7 +39,7 @@ class LayerCollection:
             mod_class = mod.__class__.__name__
             print("mod class: ", mod_class)
             if mod_class in ['Linear', 'Conv2d', 'BatchNorm1d',
-                             'BatchNorm2d', 'GroupNorm', 'WeightNorm1d','Conv1d','Embedding']:
+                             'BatchNorm2d', 'GroupNorm', 'WeightNorm1d','Conv1D','Embedding']:
                 lc.add_layer('%s.%s' % (layer, str(mod)),
                              LayerCollection._module_to_layer(mod))
             elif not ignore_unsupported_layers:
@@ -106,7 +106,7 @@ class LayerCollection:
             return WeightNorm2dLayer(in_channels=mod.in_channels,
                                      out_channels=mod.out_channels,
                                      kernel_size=mod.kernel_size)
-        elif mod_class == 'Conv1d':
+        elif mod_class == 'Conv1D':
             return Conv1dLayer(in_channels=mod.in_channels,
                                out_channels=mod.out_channels,
                                kernel_size=mod.kernel_size,
