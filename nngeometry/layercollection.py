@@ -107,8 +107,8 @@ class LayerCollection:
                                      out_channels=mod.out_channels,
                                      kernel_size=mod.kernel_size)
         elif mod_class == 'Conv1D':
-            return Conv1dLayer(in_channels=mod.in_channels,
-                               out_channels=mod.out_channels,
+            return Conv1dLayer(in_channels=mod.weight.shape[0],
+                               out_channels=mod.nf,
                                kernel_size=mod.kernel_size,
                                bias=(mod.bias is not None))  
         elif mod_class == 'Embedding':
