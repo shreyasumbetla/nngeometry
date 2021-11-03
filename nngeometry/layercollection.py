@@ -114,7 +114,7 @@ class LayerCollection:
         elif mod_class == 'Embedding':
             return EmbeddingLayer(num_embeddings=mod.num_embeddings,
                                embedding_dim=mod.embedding_dim,
-                               bias=False)       
+                                )       
 
     def numel(self):
         """
@@ -223,7 +223,7 @@ class LinearLayer(AbstractLayer):
 
 class EmbeddingLayer(AbstractLayer):
 
-    def __init__(self, num_embeddings, embedding_dim, bias=True):
+    def __init__(self, num_embeddings, embedding_dim, bias=False):
         print("In init embeddinglayer")
         self.num_embeddings = num_embeddings
         self.embedding_dim = embedding_dim
