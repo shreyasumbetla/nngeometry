@@ -114,7 +114,7 @@ class LayerCollection:
         elif mod_class == 'Embedding':
             return EmbeddingLayer(num_embeddings=mod.num_embeddings,
                                embedding_dim=mod.embedding_dim,
-                               bias=(mod.bias is not None))       
+                               bias=False)       
 
     def numel(self):
         """
