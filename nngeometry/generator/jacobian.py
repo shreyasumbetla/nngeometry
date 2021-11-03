@@ -75,6 +75,8 @@ class Jacobian:
         for d in loader:
             inputs = d[0]
             inputs.requires_grad = True
+            print(inputs)
+            print(inputs.shape)
             bs = inputs.size(0)
             output = self.function(*d).view(bs, self.n_output) \
                 .sum(dim=0)
