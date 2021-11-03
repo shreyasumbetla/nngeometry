@@ -109,7 +109,6 @@ class LayerCollection:
         elif mod_class == 'Conv1D':
             return Conv1dLayer(in_channels=mod.weight.shape[0],
                                out_channels=mod.nf,
-                               kernel_size=mod.kernel_size,
                                bias=(mod.bias is not None))  
         elif mod_class == 'Embedding':
             return EmbeddingLayer(num_embeddings=mod.num_embeddings,
@@ -155,9 +154,7 @@ class Conv1dLayer(AbstractLayer):
     def __init__(self, in_channels, out_channels, kernel_size, bias=True):
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.kernel_size = kernel_size
-        self.weight = Parameter(out_channels, in_channels, kernel_size[0],
-                                kernel_size[1])
+        self.weight = Parameter(out_channels, in_channels)
         if bias:
             self.bias = Parameter(out_channels)
         else:
@@ -171,8 +168,7 @@ class Conv1dLayer(AbstractLayer):
 
     def __eq__(self, other):
         return (self.in_channels == other.in_channels and
-                self.out_channels == other.out_channels and
-                self.kernel_size == other.kernel_size)
+                self.out_channels == other.out_channels)
 
     
 class Conv2dLayer(AbstractLayer):
