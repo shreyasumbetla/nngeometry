@@ -758,6 +758,14 @@ class Jacobian:
                 start_p += mod.weight.numel()
                 self.diag_m[start_p:start_p+mod.bias.numel()] \
                     .add_((gy.sum(dim=(2, 3))**2).sum(dim=0))
+        elif mod_class == 'Conv1D':
+            indiv_gw = per_example_grad_conv(mod, x, gy)
+            self.diag_m[start_p:start_p+mod.weight.numel()] \
+                .add_((indiv_gw**2).sum(dim=0).view(-1))
+            if self.layer_collection[layer_id].bias is not None:
+                start_p += mod.weight.numel()
+                self.diag_m[start_p:start_p+mod.bias.numel()] \
+                    .add_((gy**2).sum(dim=0))
         elif mod_class == 'BatchNorm1d':
             self._check_bn_training(mod)
             x_normalized = F.batch_norm(x, mod.running_mean,
@@ -796,6 +804,13 @@ class Jacobian:
             gw -= (gy * wn2_out).unsqueeze(2) * mod.weight.unsqueeze(0)
             self.diag_m[start_p: start_p+mod.weight.numel()] \
                 .add_((gw**2).sum(dim=0).view(-1))
+        if mod_class == 'Embedding':
+            self.diag_m[start_p:start_p+mod.weight.numel()] \
+                .add_(torch.mm(gy.t()**2, x**2).view(-1))
+            if self.layer_collection[layer_id].bias is not None:
+                start_p += mod.weight.numel()
+                self.diag_m[start_p: start_p+mod.bias.numel()] \
+                    .add_((gy**2).sum(dim=0))
         else:
             raise NotImplementedError
 
