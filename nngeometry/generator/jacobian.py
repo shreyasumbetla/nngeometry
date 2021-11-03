@@ -713,7 +713,7 @@ class Jacobian:
             self.grads[self.i_output, self.start:self.start+bs,
                        start_p:start_p+mod.weight.numel()] \
                            .add_(gw.view(bs, -1))
-        elif mod_class == 'Conv1d':
+        elif mod_class == 'Conv1D':
             indiv_gw = per_example_grad_conv(mod, x, gy)
             self.grads[self.i_output, self.start:self.start+bs,
                        start_p:start_p+mod.weight.numel()] \
