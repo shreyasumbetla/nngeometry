@@ -115,6 +115,8 @@ class Jacobian:
         self.start = 0
         for d in loader:
             inputs = d[0]
+            print(type(inputs))
+            print(inputs)
             inputs.requires_grad = True
             bs = inputs.size(0)
             output = self.function(*d).view(bs, self.n_output) \
